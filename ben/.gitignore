@@ -1,1 +1,8 @@
 docs/pydantic_docs
+
+logs/
+
+.venv
+__pycache__/
+
+.aider.conf.yml
