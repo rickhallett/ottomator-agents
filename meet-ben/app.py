@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
 from pydantic import BaseModel
 from dotenv import load_dotenv
+from rich import print
 from pathlib import Path
 import sys
 import os
@@ -87,10 +88,6 @@ async def store_message(session_id: str, message_type: str, content: str, data: 
         }).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to store message: {str(e)}")
-    
-@app.get("/api/ben", response_model=AgentResponse)
-async def ben():
-    return AgentResponse(success=True)
 
 @app.post("/api/ben", response_model=AgentResponse)
 async def ben(
@@ -100,6 +97,8 @@ async def ben(
     try:
         # Fetch conversation history from the DB
         conversation_history = await fetch_conversation_history(request.session_id)
+
+        print(conversation_history)
         
         # Convert conversation history to format expected by agent
         # This will be different depending on your framework (Pydantic AI, LangChain, etc.)
@@ -111,11 +110,14 @@ async def ben(
             msg = {"role": msg_type, "content": msg_content}
             messages.append(msg)
 
+        print(messages)
+
         # Store user's query
         await store_message(
             session_id=request.session_id,
             message_type="human",
-            content=request.query
+            content=request.query,
+            data={"request_id": request.request_id}
         )            
 
         """

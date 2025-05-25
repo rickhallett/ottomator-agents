@@ -10,6 +10,9 @@ import yaml
 import argparse
 from openai import OpenAI
 import subprocess
+from aider import aider
+
+
 
 
 class EvaluationResult(BaseModel):
